@@ -38,7 +38,8 @@
 ## 1. 买之前
 
 - 一律**月付**，用满一个月再决定要不要换季付。
-- 用页面给的测试 IP 在本机 ping，晚高峰再测一次（Windows：`ping -n 50 测试IP`；macOS/Linux：`ping -c 50 测试IP`）。
+- 用页面给的测试 IP 在本机测延迟和丢包，晚高峰再测一次（Windows：`ping -n 50 测试IP`；macOS/Linux：`ping -c 50 测试IP`）。
+- **有的服务商禁 ping（ICMP），ping 不通不代表机器或线路有问题。** 换成测 TCP 端口：Windows PowerShell `Test-NetConnection 测试IP -Port 22`（端口换成对方给的 SSH 或网站端口），macOS/Linux `nc -vz 测试IP 22`。要看丢包可以用 `mtr` / `tcping`，或 TCP 模式的 traceroute（`traceroute -T -p 22 测试IP`）。
 - 选带回国优化的线路（9929 / CMIN2）。纯国际线路可能直接 ping 不通，买了就是废的。
 - 机房 IP 开不了奈飞完整内容，大概率只能看自制剧，别抱太大期望。
 
@@ -366,7 +367,7 @@ ufw allow from 你的IP to any port <面板端口> proto tcp
 5. 客户端逐项核对：UUID、Password 公钥（不是私钥）、SID、SNI、流控、指纹。
 6. `xray run -test -config /usr/local/etc/xray/config.json`：配置是否合法。
 7. `journalctl -u xray -n 50 --no-pager`：看最近的报错日志。
-8. 本机 ping 不通服务器：线路或 IP 被封，换 IP 或提工单，配置没用。
+8. 先别信 ping：很多服务商禁 ICMP，ping 不通很正常。用 TCP 测端口：Windows `Test-NetConnection 服务器IP -Port 节点端口`，macOS/Linux `nc -vz 服务器IP 节点端口`。SSH 端口能通、节点端口不通，查前面几项；两个端口都不通且后台防火墙已放行，才是线路或 IP 被封，换 IP 或提工单，配置没用。
 9. ping 通但握手超时：用 `date` 看服务器时间，偏差大会导致 Reality 校验失败；`timedatectl set-ntp true`。
 
 ## 13. 升级、备份、卸载
